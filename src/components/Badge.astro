@@ -1,0 +1,39 @@
+---
+interface Props {
+  color?: "violet" | "cyan" | "amber" | "ok" | "error";
+}
+
+const { color = "violet" } = Astro.props;
+
+const palette: Record<string, string> = {
+  violet: "var(--accent-violet)",
+  cyan: "var(--accent-cyan)",
+  amber: "var(--accent-amber)",
+  ok: "var(--color-ok)",
+  error: "var(--color-error)",
+};
+
+const c = palette[color] ?? palette.violet;
+---
+
+<span
+  class="badge"
+  style={`background: color-mix(in srgb, ${c} 12%, transparent); color: ${c};`}
+>
+  <slot />
+</span>
+
+<style>
+  .badge {
+    font-family: var(--font);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: var(--radius-sm);
+    padding: 2px var(--space-2);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+</style>

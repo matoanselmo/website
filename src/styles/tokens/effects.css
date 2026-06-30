@@ -1,0 +1,14 @@
+:root {
+  --focus-ring: 0 0 0 2px color-mix(in srgb, var(--accent-violet) 60%, transparent);
+  --focus-ring-soft: 0 0 0 2px color-mix(in srgb, var(--accent-violet) 50%, transparent);
+
+  --glow-violet: 0 0 12px 0 color-mix(in srgb, var(--accent-violet) 30%, transparent);
+  --glow-cyan: 0 0 12px 0 color-mix(in srgb, var(--accent-cyan) 30%, transparent);
+  --glow-amber: 0 0 12px 0 color-mix(in srgb, var(--accent-amber) 30%, transparent);
+
+  --stripe-active: inset 3px 0 0 var(--accent-violet);
+
+  --transition: 120ms ease;
+
+  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}

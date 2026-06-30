@@ -1,0 +1,30 @@
+---
+interface Props {
+  raised?: boolean;
+  active?: boolean;
+}
+
+const { raised = false, active = false } = Astro.props;
+---
+
+<div
+  class:list={["card", { "card--raised": raised || active, "card--active": active }]}
+>
+  <slot />
+</div>
+
+<style>
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: var(--space-6);
+  }
+
+  .card--raised {
+    background: var(--surface-raised);
+  }
+
+  .card--active {
+    box-shadow: var(--stripe-active);
+  }
+</style>

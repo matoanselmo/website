@@ -1,0 +1,57 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font);
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
+  background: var(--bg);
+  color: var(--text);
+  line-height: var(--leading-body);
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.035;
+  background-image: var(--grain);
+  background-size: 180px 180px;
+}
+
+h1, h2, h3 {
+  font-family: var(--font);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text);
+  line-height: var(--leading-display);
+}
+
+h1 { font-size: var(--text-2xl); font-weight: var(--weight-bold); }
+h2 { font-size: var(--text-xl); font-weight: var(--weight-bold); }
+h3 { font-size: var(--text-lg); font-weight: var(--weight-medium); letter-spacing: var(--tracking-snug); }
+
+p { color: var(--text-2); line-height: var(--leading-body); }
+
+a { color: var(--color-link); text-decoration: none; }
+a:hover { opacity: 0.8; }
+
+code, pre { font-family: var(--font); }
+
+.label-caps {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-2);
+}

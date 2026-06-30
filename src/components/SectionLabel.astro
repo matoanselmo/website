@@ -1,0 +1,23 @@
+---
+interface Props {
+  color?: "violet" | "amber";
+}
+
+const { color = "violet" } = Astro.props;
+
+const colorVar = color === "amber" ? "var(--accent-amber)" : "var(--accent-violet)";
+---
+
+<div class="section-label">
+  <span style={`color: ${colorVar};`}>//</span> <slot />
+</div>
+
+<style>
+  .section-label {
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-bottom: var(--space-6);
+  }
+</style>

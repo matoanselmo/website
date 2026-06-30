@@ -1,0 +1,28 @@
+:root {
+  --bg: #0c0c10;
+  --surface: #13131a;
+  --surface-raised: #1c1c26;
+  --surface-overlay: #242432;
+
+  --text: #e2e2f0;
+  --text-2: #7a7a96;
+  --text-3: #44445a;
+
+  --accent-violet: #a78bfa;
+  --accent-cyan: #22d3ee;
+  --accent-amber: #f59e0b;
+
+  --color-link: var(--accent-violet);
+  --color-focus: var(--accent-violet);
+  --color-live: var(--accent-cyan);
+  --color-warn: var(--accent-amber);
+  --color-error: #f87171;
+  --color-ok: #4ade80;
+
+  --surface-card: var(--surface);
+  --surface-nested: var(--surface-raised);
+  --surface-float: var(--surface-overlay);
+  --text-body: var(--text);
+  --text-muted: var(--text-2);
+  --text-faint: var(--text-3);
+}

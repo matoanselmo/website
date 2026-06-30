@@ -1,0 +1,37 @@
+---
+interface Props {
+  color?: "cyan" | "ok" | "amber" | "error" | "violet";
+  pulse?: boolean;
+}
+
+const { color = "cyan", pulse = true } = Astro.props;
+
+const palette: Record<string, string> = {
+  cyan: "var(--accent-cyan)",
+  ok: "var(--color-ok)",
+  amber: "var(--accent-amber)",
+  error: "var(--color-error)",
+  violet: "var(--accent-violet)",
+};
+
+const c = palette[color] ?? palette.cyan;
+---
+
+<span
+  class:list={["dot", { "dot--pulse": pulse }]}
+  style={`background: ${c};`}
+/>
+
+<style>
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .dot--pulse {
+    animation: mato-pulse 2s ease-in-out infinite;
+  }
+</style>
