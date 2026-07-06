@@ -1,28 +1,31 @@
 ---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import type { Lang } from "@/content/site";
+
 interface Props {
-  current: "en" | "pt";
+  current: Lang;
 }
 
 const { current } = Astro.props;
+
+const languages: { code: Lang; label: string; flag: string }[] = [
+  { code: "en", label: "English", flag: "\u{1F1FA}\u{1F1F8}" },
+  { code: "pt", label: "Português", flag: "\u{1F1E7}\u{1F1F7}" },
+];
 ---
 
 <div class="lang-switcher">
-  <a
-    href="/"
-    class:list={["lang-btn", { "lang-btn--active": current === "en" }]}
-    title="English"
-    aria-label="English"
-  >
-    &#x1F1FA;&#x1F1F8;
-  </a>
-  <a
-    href="/pt/"
-    class:list={["lang-btn", { "lang-btn--active": current === "pt" }]}
-    title="Português"
-    aria-label="Português"
-  >
-    &#x1F1E7;&#x1F1F7;
-  </a>
+  {languages.map((l) => (
+    <a
+      href={getRelativeLocaleUrl(l.code)}
+      class:list={["lang-btn", { "lang-btn--active": current === l.code }]}
+      title={l.label}
+      aria-label={l.label}
+      aria-current={current === l.code ? "true" : undefined}
+    >
+      {l.flag}
+    </a>
+  ))}
 </div>
 
 <style>

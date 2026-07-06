@@ -1,5 +1,5 @@
 :root {
-  --font: 'JetBrains Mono', 'Geist Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+  --font: var(--font-jetbrains), 'Geist Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
   --font-mono: var(--font);
 
   --text-xs: 11px;

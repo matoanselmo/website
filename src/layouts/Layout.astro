@@ -1,12 +1,21 @@
 ---
-import "../styles/global.css";
+import { Font } from "astro:assets";
+import type { Lang } from "@/content/site";
+import "@/styles/global.css";
 
 interface Props {
   title: string;
-  lang?: string;
+  description?: string;
+  lang?: Lang;
 }
 
-const { title, lang = "en" } = Astro.props;
+const {
+  title,
+  description = "Mateus Anselmo — student & tech enthusiast. A config-driven personal site about self-hosting, homelabs, and 3d printing.",
+  lang = "en",
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
@@ -14,7 +23,28 @@ const { title, lang = "en" } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={canonical} />
+
     <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={lang === "pt" ? "pt_BR" : "en_US"} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <link rel="alternate" hreflang="en" href={new URL("/", Astro.site)} />
+    <link rel="alternate" hreflang="pt" href={new URL("/pt/", Astro.site)} />
+
+    <Font cssVariable="--font-jetbrains" preload />
   </head>
   <body>
     <slot />

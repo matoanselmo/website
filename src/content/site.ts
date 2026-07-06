@@ -101,7 +101,7 @@ export const CONTENT: Record<Lang, SiteContent> = {
           period: "2025 — now",
           role: "High School",
           org: "Alexander Academy",
-          desc: "Just boring highschoo;",
+          desc: "Just boring highschool",
         },
       ],
     },
@@ -129,7 +129,7 @@ export const CONTENT: Record<Lang, SiteContent> = {
       label: "sobre",
       body: [
         "Sou um entusiasta de tech que caiu no buraco do self hosting e nunca mais saiu. o matoserver™ já me economizou uma grana.",
-        "Prefiro entender dez linhas a depender de mil. Esse site inteiro roda a partir de um único arquivo de config, o que me fazer todo sentido.",
+        "Prefiro entender dez linhas a depender de mil. Esse site inteiro roda a partir de um único arquivo de config, o que me faz todo sentido.",
       ],
     },
     projects: {
@@ -138,21 +138,21 @@ export const CONTENT: Record<Lang, SiteContent> = {
         {
           name: "este site",
           meta: "movido a config",
-          repo: "https://github.com/matoanselmo",
+          repo: "https://matoanselmo.tech/",
           desc: "A página que você tá lendo agora. Cada palavra, projeto e idioma vive num objeto de config bem organizado — muda o dado, o layout acompanha. Sem CMS, sem bagunça.",
           tags: ["config-driven", "i18n", "sem-cms"],
         },
         {
           name: "matoserver",
           meta: "homelab",
-          repo: "https://github.com/matoanselmo",
+          repo: "https://server.matoanselmo.tech/",
           desc: "Meu homelab pessoal. Debian + Docker, uma dúzia de containers atrás de um único dashboard. A coisa com que eu mais aprendo.",
           tags: ["Debian", "Docker", "self-hosted"],
         },
         {
           name: "ender-3-klipper",
           meta: "impressão 3d",
-          repo: "https://github.com/matoanselmo",
+          repo: "https://matoanselmo.tech/",
           desc: "Ender 3 V3 SE reflashada com Klipper. printer.cfg personalizado, input shaping, pressure advance e uma UI Mainsail que eu confiro vezes demais.",
           tags: ["Klipper", "Mainsail", "G-code"],
         },
