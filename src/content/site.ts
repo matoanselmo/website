@@ -1,6 +1,5 @@
 export interface Project {
   name: string;
-  meta: string;
   repo: string;
   desc: string;
   tags: string[];
@@ -15,10 +14,13 @@ export interface Experience {
 
 export interface SiteContent {
   hero: {
-    status: string;
     name: string;
     role: string;
     tagline: string;
+  };
+  links: {
+    github: string;
+    email: string;
   };
   about: {
     label: string;
@@ -26,6 +28,7 @@ export interface SiteContent {
   };
   projects: {
     label: string;
+    allLabel: string;
     items: Project[];
   };
   experience: {
@@ -34,7 +37,6 @@ export interface SiteContent {
   };
   now: {
     label: string;
-    intro: string;
     items: string[];
     updatedLabel: string;
     updated: string;
@@ -49,137 +51,120 @@ export type Lang = "en" | "pt";
 export const SECTIONS = {
   about: true,
   projects: true,
-  experience: false,
+  experience: true,
   now: true,
 } as const;
+
+const LINKS = {
+  github: "https://github.com/matoanselmo",
+  email: "mailto:[your@email]",
+};
 
 export const CONTENT: Record<Lang, SiteContent> = {
   en: {
     hero: {
-      status: "online",
       name: "Mateus Anselmo",
-      role: "student & tech enthusiast",
-      tagline: "A handsome young smart tech guy! - My girlfriend",
+      role: "[role]",
+      tagline: "[a one-line tagline about what you do and care about]",
     },
+    links: LINKS,
     about: {
       label: "about",
       body: [
-        "I'm a tech enthusiast who's got into the self hosting rabbit hole and never really left. matoserver™ has saved me some money.",
-        "I'd rather understand ten lines than depend on a thousand. This whole site is driven by a single config file, which feels about right.",
+        "[An opening paragraph about you. Say who you are and what you're into, in your own voice.]",
+        "[A second, quieter paragraph with the extra detail.]",
       ],
     },
     projects: {
       label: "projects",
+      allLabel: "all repositories",
       items: [
         {
+          name: "tessera",
+          repo: "https://github.com/matoanselmo/tessera",
+          desc: "[project description, one or two lines]",
+          tags: ["qml", "niri", "[tag]"],
+        },
+        {
           name: "this site",
-          meta: "config-driven",
-          repo: "https://matoanselmo.runs-on.dev/",
-          desc: "The page you're reading. Every word, project, and language lives in one tidy config object — change the data, the layout follows. No CMS, no clutter.",
-          tags: ["config-driven", "i18n", "no-cms"],
+          repo: "https://github.com/matoanselmo/website",
+          desc: "[project description, one or two lines]",
+          tags: ["astro", "[tag]"],
         },
         {
-          name: "matoserver",
-          meta: "homelab",
-          repo: "https://server.matoanselmo.runs-on.dev/",
-          desc: "My personal homelab. Debian + Docker, a dozen containers living behind a single dashboard. The thing I learn the most from.",
-          tags: ["Debian", "Docker", "self-hosted"],
-        },
-        {
-          name: "ender-3-klipper",
-          meta: "3d printing",
-          repo: "https://matoanselmo.runs-on.dev/",
-          desc: "An Ender 3 with klipper and terrible config which I'm still learning how to deal with.",
-          tags: ["Klipper", "Mainsail", "G-code"],
+          name: "[project name]",
+          repo: "https://github.com/matoanselmo",
+          desc: "[project description, one or two lines]",
+          tags: ["[tag]", "[tag]"],
         },
       ],
     },
     experience: {
       label: "education & work",
       items: [
-        {
-          period: "2025 — now",
-          role: "High School",
-          org: "Alexander Academy",
-          desc: "Just boring highschool",
-        },
+        { period: "2025 — now", role: "[role]", org: "[place]", desc: "[what you did there]" },
+        { period: "[year — year]", role: "[role]", org: "[place]", desc: "[what you did there]" },
       ],
     },
     now: {
       label: "now",
-      intro: "What I'm actually doing at the moment —",
-      items: [
-        "Mostly focusing on school (& summer school)",
-        "Learning how to model & make my own 3d prints with fusion.",
-        "Slowly getting back into programming.",
-      ],
+      items: ["[something you're doing]", "[something you're doing]", "[something you're doing]"],
       updatedLabel: "updated",
-      updated: "June 2026",
+      updated: "[month year]",
     },
-    footer: { note: "built with caffeine and a config file" },
+    footer: { note: "[footer note]" },
   },
   pt: {
     hero: {
-      status: "online",
       name: "Mateus Anselmo",
-      role: "estudante & entusiasta de tech",
-      tagline: "Um jovem bonito e esperto de tech! - Minha namorada",
+      role: "[papel]",
+      tagline: "[uma frase sobre o que você faz e curte]",
     },
+    links: LINKS,
     about: {
       label: "sobre",
       body: [
-        "Sou um entusiasta de tech que caiu no buraco do self hosting e nunca mais saiu. o matoserver™ já me economizou uma grana.",
-        "Prefiro entender dez linhas a depender de mil. Esse site inteiro roda a partir de um único arquivo de config, o que me faz todo sentido.",
+        "[Um parágrafo de abertura sobre você. Diga quem você é e do que curte, do seu jeito.]",
+        "[Um segundo parágrafo, mais tranquilo, com os detalhes extras.]",
       ],
     },
     projects: {
       label: "projetos",
+      allLabel: "todos os repositórios",
       items: [
         {
+          name: "tessera",
+          repo: "https://github.com/matoanselmo/tessera",
+          desc: "[descrição do projeto, uma ou duas linhas]",
+          tags: ["qml", "niri", "[tag]"],
+        },
+        {
           name: "este site",
-          meta: "movido a config",
-          repo: "https://matoanselmo.runs-on.dev/",
-          desc: "A página que você tá lendo agora. Cada palavra, projeto e idioma vive num objeto de config bem organizado — muda o dado, o layout acompanha. Sem CMS, sem bagunça.",
-          tags: ["config-driven", "i18n", "sem-cms"],
+          repo: "https://github.com/matoanselmo/website",
+          desc: "[descrição do projeto, uma ou duas linhas]",
+          tags: ["astro", "[tag]"],
         },
         {
-          name: "matoserver",
-          meta: "homelab",
-          repo: "https://server.matoanselmo.runs-on.dev/",
-          desc: "Meu homelab pessoal. Debian + Docker, uma dúzia de containers atrás de um único dashboard. A coisa com que eu mais aprendo.",
-          tags: ["Debian", "Docker", "self-hosted"],
-        },
-        {
-          name: "ender-3-klipper",
-          meta: "impressão 3d",
-          repo: "https://matoanselmo.runs-on.dev/",
-          desc: "Ender 3 V3 SE reflashada com Klipper. printer.cfg personalizado, input shaping, pressure advance e uma UI Mainsail que eu confiro vezes demais.",
-          tags: ["Klipper", "Mainsail", "G-code"],
+          name: "[nome do projeto]",
+          repo: "https://github.com/matoanselmo",
+          desc: "[descrição do projeto, uma ou duas linhas]",
+          tags: ["[tag]", "[tag]"],
         },
       ],
     },
     experience: {
       label: "formação & trabalho",
       items: [
-        {
-          period: "2025 — agora",
-          role: "Ensino Médio",
-          org: "Alexander Academy",
-          desc: "Apenas o tedio de um ensino medio qualquer.",
-        },
+        { period: "2025 — agora", role: "[papel]", org: "[lugar]", desc: "[o que você fez lá]" },
+        { period: "[ano — ano]", role: "[papel]", org: "[lugar]", desc: "[o que você fez lá]" },
       ],
     },
     now: {
       label: "agora",
-      intro: "O que eu realmente to fazendo no momento —",
-      items: [
-        "Focando bastante na escola (& curso de verão)",
-        "Aprendendo a modelar & fazer minhas próprias impressões 3d com o fusion.",
-        "Voltando devagar pra programação.",
-      ],
+      items: ["[algo que você tá fazendo]", "[algo que você tá fazendo]", "[algo que você tá fazendo]"],
       updatedLabel: "atualizado",
-      updated: "junho 2026",
+      updated: "[mês ano]",
     },
-    footer: { note: "feito com cafeína e um arquivo de config" },
+    footer: { note: "[nota do rodapé]" },
   },
 };

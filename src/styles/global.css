@@ -15,9 +15,7 @@
   50% { opacity: 0.3; }
 }
 
-body {
-  background-image:
-    linear-gradient(rgba(167,139,250,0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(167,139,250,0.035) 1px, transparent 1px);
-  background-size: 40px 40px;
+::selection {
+  background: var(--accent-blue);
+  color: var(--bg);
 }

@@ -1,23 +1,32 @@
+/* One Dark, after Tessera (matoanselmo/tessera ShellGlobals.qml). */
 :root {
-  --bg: #0c0c10;
-  --surface: #13131a;
-  --surface-raised: #1c1c26;
-  --surface-overlay: #242432;
+  --bg: #181a1f;
+  --surface: #21252b;
+  --surface-raised: #2c313c;
+  --surface-overlay: #3e4451;
 
-  --text: #e2e2f0;
-  --text-2: #7a7a96;
-  --text-3: #44445a;
+  --text: #d7dae0;
+  --text-2: #9da5b4;
+  --text-3: #8b919c;
+  --rule: #4b5263;
+  --surface-dim: #1b1d22;
+  --dot: #3a3f4b;
 
-  --accent-violet: #a78bfa;
-  --accent-cyan: #22d3ee;
-  --accent-amber: #f59e0b;
+  --accent-blue: #61afef;
+  --accent-violet: #c678dd;
+  --accent-cyan: #56b6c2;
+  --accent-amber: #e5c07b;
+  --accent-green: #98c379;
+  --accent-red: #e06c75;
 
-  --color-link: var(--accent-violet);
-  --color-focus: var(--accent-violet);
-  --color-live: var(--accent-cyan);
+  --border: color-mix(in srgb, var(--text-2) 35%, transparent);
+
+  --color-link: var(--accent-blue);
+  --color-focus: var(--accent-blue);
+  --color-live: var(--accent-green);
   --color-warn: var(--accent-amber);
-  --color-error: #f87171;
-  --color-ok: #4ade80;
+  --color-error: var(--accent-red);
+  --color-ok: var(--accent-green);
 
   --surface-card: var(--surface);
   --surface-nested: var(--surface-raised);
