@@ -3,7 +3,7 @@ import { defineConfig, fontProviders } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
-  site: "https://matoanselmo.tech",
+  site: "https://matoanselmo.runs-on.dev",
 
   integrations: [sitemap()],
 
