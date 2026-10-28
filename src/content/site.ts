@@ -88,7 +88,7 @@ export const CONTENT: Record<Lang, SiteContent> = {
         {
           name: "this site",
           repo: "https://github.com/matoanselmo/website",
-          desc: "[project description, one or two lines]",
+          desc: "This incredible website you're currently looking at!",
           tags: ["astro", "ai"],
         },
         {
@@ -141,7 +141,7 @@ export const CONTENT: Record<Lang, SiteContent> = {
         {
           name: "este site",
           repo: "https://github.com/matoanselmo/website",
-          desc: "[descrição do projeto, uma ou duas linhas]",
+          desc: "Este lindo site que você está olhando agora!",
           tags: ["astro", "ai"],
         },
         {
