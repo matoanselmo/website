@@ -16,14 +16,14 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     steps:
       - uses: actions/checkout@v4
       - uses: withastro/action@v3
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
