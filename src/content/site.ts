@@ -42,6 +42,10 @@ export interface SiteContent {
   footer: {
     note: string;
   };
+  ui: {
+    hints: { key: string; label: string }[];
+    columns: [string, string, string];
+  };
 }
 
 export type Lang = "en" | "pt";
@@ -49,7 +53,7 @@ export type Lang = "en" | "pt";
 export const SECTIONS = {
   about: true,
   projects: true,
-  experience: false,
+  experience: true,
   now: true,
 } as const;
 
@@ -58,128 +62,122 @@ export const CONTENT: Record<Lang, SiteContent> = {
     hero: {
       status: "online",
       name: "Mateus Anselmo",
-      role: "student & tech enthusiast",
-      tagline: "A handsome young smart tech guy! - My girlfriend",
+      role: "[role]",
+      tagline: "[tagline]",
     },
     about: {
       label: "about",
-      body: [
-        "I'm a tech enthusiast who's got into the self hosting rabbit hole and never really left. matoserver™ has saved me some money.",
-        "I'd rather understand ten lines than depend on a thousand. This whole site is driven by a single config file, which feels about right.",
-      ],
+      body: ["[paragraph about you]", "[paragraph about you]"],
     },
     projects: {
       label: "projects",
       items: [
         {
           name: "this site",
-          meta: "config-driven",
-          repo: "https://matoanselmo.runs-on.dev/",
-          desc: "The page you're reading. Every word, project, and language lives in one tidy config object — change the data, the layout follows. No CMS, no clutter.",
-          tags: ["config-driven", "i18n", "no-cms"],
+          meta: "[meta]",
+          repo: "https://github.com/matoanselmo/website",
+          desc: "[project description]",
+          tags: ["tag", "tag", "tag"],
         },
         {
           name: "matoserver",
-          meta: "homelab",
+          meta: "[meta]",
           repo: "https://server.matoanselmo.runs-on.dev/",
-          desc: "My personal homelab. Debian + Docker, a dozen containers living behind a single dashboard. The thing I learn the most from.",
-          tags: ["Debian", "Docker", "self-hosted"],
+          desc: "[project description]",
+          tags: ["tag", "tag", "tag"],
         },
         {
-          name: "ender-3-klipper",
-          meta: "3d printing",
-          repo: "https://matoanselmo.runs-on.dev/",
-          desc: "An Ender 3 with klipper and terrible config which I'm still learning how to deal with.",
-          tags: ["Klipper", "Mainsail", "G-code"],
+          name: "tessera",
+          meta: "[meta]",
+          repo: "https://github.com/matoanselmo/tessera",
+          desc: "[project description]",
+          tags: ["tag", "tag", "tag"],
         },
       ],
     },
     experience: {
       label: "education & work",
       items: [
-        {
-          period: "2025 — now",
-          role: "High School",
-          org: "Alexander Academy",
-          desc: "Just boring highschool",
-        },
+        { period: "2025 - now", role: "[role]", org: "[place]", desc: "[what you did there]" },
       ],
     },
     now: {
       label: "now",
-      intro: "What I'm actually doing at the moment —",
-      items: [
-        "Mostly focusing on school (& summer school)",
-        "Learning how to model & make my own 3d prints with fusion.",
-        "Slowly getting back into programming.",
-      ],
+      intro: "[intro line]",
+      items: ["[something you're doing]", "[something you're doing]", "[something you're doing]"],
       updatedLabel: "updated",
-      updated: "June 2026",
+      updated: "[month year]",
     },
-    footer: { note: "built with caffeine and a config file" },
+    footer: { note: "[footer note]" },
+    ui: {
+      hints: [
+        { key: "1-4", label: "section" },
+        { key: "j/k", label: "move" },
+        { key: "enter", label: "open" },
+        { key: "l", label: "language" },
+      ],
+      columns: ["Name", "Description", "Type"],
+    },
   },
   pt: {
     hero: {
       status: "online",
       name: "Mateus Anselmo",
-      role: "estudante & entusiasta de tech",
-      tagline: "Um jovem bonito e esperto de tech! - Minha namorada",
+      role: "[papel]",
+      tagline: "[frase de efeito]",
     },
     about: {
       label: "sobre",
-      body: [
-        "Sou um entusiasta de tech que caiu no buraco do self hosting e nunca mais saiu. o matoserver™ já me economizou uma grana.",
-        "Prefiro entender dez linhas a depender de mil. Esse site inteiro roda a partir de um único arquivo de config, o que me faz todo sentido.",
-      ],
+      body: ["[parágrafo sobre você]", "[parágrafo sobre você]"],
     },
     projects: {
       label: "projetos",
       items: [
         {
-          name: "este site",
-          meta: "movido a config",
-          repo: "https://matoanselmo.runs-on.dev/",
-          desc: "A página que você tá lendo agora. Cada palavra, projeto e idioma vive num objeto de config bem organizado — muda o dado, o layout acompanha. Sem CMS, sem bagunça.",
-          tags: ["config-driven", "i18n", "sem-cms"],
+          name: "this site",
+          meta: "[meta]",
+          repo: "https://github.com/matoanselmo/website",
+          desc: "[descrição do projeto]",
+          tags: ["tag", "tag", "tag"],
         },
         {
           name: "matoserver",
-          meta: "homelab",
+          meta: "[meta]",
           repo: "https://server.matoanselmo.runs-on.dev/",
-          desc: "Meu homelab pessoal. Debian + Docker, uma dúzia de containers atrás de um único dashboard. A coisa com que eu mais aprendo.",
-          tags: ["Debian", "Docker", "self-hosted"],
+          desc: "[descrição do projeto]",
+          tags: ["tag", "tag", "tag"],
         },
         {
-          name: "ender-3-klipper",
-          meta: "impressão 3d",
-          repo: "https://matoanselmo.runs-on.dev/",
-          desc: "Ender 3 V3 SE reflashada com Klipper. printer.cfg personalizado, input shaping, pressure advance e uma UI Mainsail que eu confiro vezes demais.",
-          tags: ["Klipper", "Mainsail", "G-code"],
+          name: "tessera",
+          meta: "[meta]",
+          repo: "https://github.com/matoanselmo/tessera",
+          desc: "[descrição do projeto]",
+          tags: ["tag", "tag", "tag"],
         },
       ],
     },
     experience: {
       label: "formação & trabalho",
       items: [
-        {
-          period: "2025 — agora",
-          role: "Ensino Médio",
-          org: "Alexander Academy",
-          desc: "Apenas o tedio de um ensino medio qualquer.",
-        },
+        { period: "2025 - agora", role: "[papel]", org: "[lugar]", desc: "[o que você fez lá]" },
       ],
     },
     now: {
       label: "agora",
-      intro: "O que eu realmente to fazendo no momento —",
-      items: [
-        "Focando bastante na escola (& curso de verão)",
-        "Aprendendo a modelar & fazer minhas próprias impressões 3d com o fusion.",
-        "Voltando devagar pra programação.",
-      ],
+      intro: "[frase de abertura]",
+      items: ["[algo que você tá fazendo]", "[algo que você tá fazendo]", "[algo que você tá fazendo]"],
       updatedLabel: "atualizado",
-      updated: "junho 2026",
+      updated: "[mês ano]",
     },
-    footer: { note: "feito com cafeína e um arquivo de config" },
+    footer: { note: "[nota do rodapé]" },
+    ui: {
+      hints: [
+        { key: "1-4", label: "seção" },
+        { key: "j/k", label: "mover" },
+        { key: "enter", label: "abrir" },
+        { key: "l", label: "idioma" },
+      ],
+      columns: ["Nome", "Descrição", "Tipo"],
+    },
   },
 };

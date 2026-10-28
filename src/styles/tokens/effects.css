@@ -1,12 +1,12 @@
 :root {
-  --focus-ring: 0 0 0 2px color-mix(in srgb, var(--accent-violet) 60%, transparent);
-  --focus-ring-soft: 0 0 0 2px color-mix(in srgb, var(--accent-violet) 50%, transparent);
+  --focus-ring: 0 0 0 2px color-mix(in srgb, var(--accent-blue) 60%, transparent);
+  --focus-ring-soft: 0 0 0 2px color-mix(in srgb, var(--accent-blue) 50%, transparent);
 
   --glow-violet: 0 0 12px 0 color-mix(in srgb, var(--accent-violet) 30%, transparent);
   --glow-cyan: 0 0 12px 0 color-mix(in srgb, var(--accent-cyan) 30%, transparent);
   --glow-amber: 0 0 12px 0 color-mix(in srgb, var(--accent-amber) 30%, transparent);
 
-  --stripe-active: inset 3px 0 0 var(--accent-violet);
+  --stripe-active: inset 3px 0 0 var(--accent-blue);
 
   --transition: 120ms ease;
 

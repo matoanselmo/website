@@ -1,0 +1,30 @@
+---
+// The key legend Tessera's panels show along their bottom edge.
+interface Props {
+  hints: { key: string; label: string }[];
+}
+
+const { hints } = Astro.props;
+---
+
+<div class="hints">
+  {hints.map((h) => (
+    <span><kbd>{h.key}</kbd> {h.label}</span>
+  ))}
+</div>
+
+<style>
+  .hints {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--text-2);
+  }
+
+  kbd {
+    font: inherit;
+    font-weight: var(--weight-bold);
+    color: var(--accent-blue);
+  }
+</style>

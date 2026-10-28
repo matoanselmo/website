@@ -1,0 +1,49 @@
+---
+// A bordered box with its title set into the top border, the way Tessera's
+// TuiPane (after bluetui and impala) draws its panels.
+interface Props {
+  title: string;
+  id?: string;
+  focused?: boolean;
+}
+
+const { title, id, focused = false } = Astro.props;
+---
+
+<fieldset class:list={["pane", { "pane--focused": focused }]} id={id}>
+  <legend class="pane__title">{title}</legend>
+  <slot />
+</fieldset>
+
+<style>
+  .pane {
+    border: 1px solid var(--border);
+    background: var(--surface-raised);
+    padding: var(--space-3) var(--space-4) var(--space-4);
+    min-width: 0;
+    transition: border-color var(--transition);
+    scroll-margin-top: 64px;
+  }
+
+  .pane__title {
+    padding: 0 var(--space-1);
+    margin-left: -4px;
+    font-weight: var(--weight-bold);
+    color: var(--text-2);
+    transition: color var(--transition);
+  }
+
+  .pane--focused,
+  .pane:hover,
+  .pane:focus-within,
+  .pane:target {
+    border-color: var(--accent-blue);
+  }
+
+  .pane--focused .pane__title,
+  .pane:hover .pane__title,
+  .pane:focus-within .pane__title,
+  .pane:target .pane__title {
+    color: var(--accent-blue);
+  }
+</style>

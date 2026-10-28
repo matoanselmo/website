@@ -1,0 +1,127 @@
+---
+// Tessera's bar: workspace tiles on the left, the clock in the middle and
+// status tiles on the right.
+import { getRelativeLocaleUrl } from "astro:i18n";
+import type { Lang } from "@/content/site";
+
+interface Props {
+  lang: Lang;
+  workspaces: { id: string; label: string }[];
+}
+
+const { lang, workspaces } = Astro.props;
+const other: Lang = lang === "en" ? "pt" : "en";
+---
+
+<header class="bar">
+  <nav class="bar__group" aria-label="sections">
+    {workspaces.map((w, i) => (
+      <a href={`#${w.id}`} class:list={["tile", "ws", { "ws--active": i === 0 }]} data-ws={w.id}>
+        <span class="ws__num">{i + 1}</span>
+        <span class="ws__label">{w.label}</span>
+      </a>
+    ))}
+  </nav>
+
+  <div class="tile clock" aria-hidden="true">
+    <span class="clock__icon">◷</span><span id="clock">--:--</span>
+  </div>
+
+  <div class="bar__group bar__group--end">
+    <a href={getRelativeLocaleUrl(other)} class="tile" data-lang title={other === "pt" ? "Português" : "English"}>
+      <span class="tile__icon">⌘</span>{lang}
+    </a>
+    <a href="https://github.com/matoanselmo" target="_blank" rel="noopener" class="tile" title="GitHub">
+      <span class="tile__icon">⎇</span>gh
+    </a>
+  </div>
+</header>
+
+<script>
+  const clock = document.getElementById("clock");
+  const tick = () => {
+    if (clock) clock.textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+  };
+  tick();
+  setInterval(tick, 10_000);
+
+  // Light up the workspace tile for whichever section is on screen.
+  const tiles = document.querySelectorAll<HTMLElement>("[data-ws]");
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        tiles.forEach((t) => t.classList.toggle("ws--active", t.dataset.ws === e.target.id));
+      }
+    },
+    { rootMargin: "-40% 0px -55% 0px" },
+  );
+  tiles.forEach((t) => {
+    const section = document.getElementById(t.dataset.ws!);
+    if (section) observer.observe(section);
+  });
+</script>
+
+<style>
+  .bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 4px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--surface);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+  }
+
+  .bar__group {
+    display: flex;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .bar__group--end {
+    justify-content: flex-end;
+  }
+
+  .tile {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 26px;
+    padding: 0 10px;
+    background: var(--surface-raised);
+    color: var(--text);
+    transition: background var(--transition), color var(--transition);
+  }
+
+  a.tile:hover {
+    opacity: 1;
+    background: var(--surface-overlay);
+  }
+
+  .tile__icon,
+  .clock__icon {
+    color: var(--text-2);
+  }
+
+  .ws--active,
+  a.ws--active:hover {
+    background: var(--accent-blue);
+    color: var(--bg);
+  }
+
+  .ws__label {
+    font-weight: var(--weight-regular);
+  }
+
+  @media (max-width: 560px) {
+    .ws__label {
+      display: none;
+    }
+  }
+</style>
