@@ -15,11 +15,6 @@
   50% { opacity: 0.3; }
 }
 
-body {
-  background-image: radial-gradient(color-mix(in srgb, var(--text-3) 45%, transparent) 1px, transparent 1px);
-  background-size: 22px 22px;
-}
-
 ::selection {
   background: var(--accent-blue);
   color: var(--bg);

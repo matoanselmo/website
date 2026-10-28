@@ -1,6 +1,5 @@
 export interface Project {
   name: string;
-  meta: string;
   repo: string;
   desc: string;
   tags: string[];
@@ -15,10 +14,13 @@ export interface Experience {
 
 export interface SiteContent {
   hero: {
-    status: string;
     name: string;
     role: string;
     tagline: string;
+  };
+  links: {
+    github: string;
+    email: string;
   };
   about: {
     label: string;
@@ -26,6 +28,7 @@ export interface SiteContent {
   };
   projects: {
     label: string;
+    allLabel: string;
     items: Project[];
   };
   experience: {
@@ -34,17 +37,12 @@ export interface SiteContent {
   };
   now: {
     label: string;
-    intro: string;
     items: string[];
     updatedLabel: string;
     updated: string;
   };
   footer: {
     note: string;
-  };
-  ui: {
-    hints: { key: string; label: string }[];
-    columns: [string, string, string];
   };
 }
 
@@ -57,127 +55,116 @@ export const SECTIONS = {
   now: true,
 } as const;
 
+const LINKS = {
+  github: "https://github.com/matoanselmo",
+  email: "mailto:[your@email]",
+};
+
 export const CONTENT: Record<Lang, SiteContent> = {
   en: {
     hero: {
-      status: "online",
       name: "Mateus Anselmo",
       role: "[role]",
-      tagline: "[tagline]",
+      tagline: "[a one-line tagline about what you do and care about]",
     },
+    links: LINKS,
     about: {
       label: "about",
-      body: ["[paragraph about you]", "[paragraph about you]"],
+      body: [
+        "[An opening paragraph about you. Say who you are and what you're into, in your own voice.]",
+        "[A second, quieter paragraph with the extra detail.]",
+      ],
     },
     projects: {
       label: "projects",
+      allLabel: "all repositories",
       items: [
         {
-          name: "this site",
-          meta: "[meta]",
-          repo: "https://github.com/matoanselmo/website",
-          desc: "[project description]",
-          tags: ["tag", "tag", "tag"],
-        },
-        {
-          name: "matoserver",
-          meta: "[meta]",
-          repo: "https://server.matoanselmo.runs-on.dev/",
-          desc: "[project description]",
-          tags: ["tag", "tag", "tag"],
-        },
-        {
           name: "tessera",
-          meta: "[meta]",
           repo: "https://github.com/matoanselmo/tessera",
-          desc: "[project description]",
-          tags: ["tag", "tag", "tag"],
+          desc: "[project description, one or two lines]",
+          tags: ["qml", "niri", "[tag]"],
+        },
+        {
+          name: "this site",
+          repo: "https://github.com/matoanselmo/website",
+          desc: "[project description, one or two lines]",
+          tags: ["astro", "[tag]"],
+        },
+        {
+          name: "[project name]",
+          repo: "https://github.com/matoanselmo",
+          desc: "[project description, one or two lines]",
+          tags: ["[tag]", "[tag]"],
         },
       ],
     },
     experience: {
       label: "education & work",
       items: [
-        { period: "2025 - now", role: "[role]", org: "[place]", desc: "[what you did there]" },
+        { period: "2025 — now", role: "[role]", org: "[place]", desc: "[what you did there]" },
+        { period: "[year — year]", role: "[role]", org: "[place]", desc: "[what you did there]" },
       ],
     },
     now: {
       label: "now",
-      intro: "[intro line]",
       items: ["[something you're doing]", "[something you're doing]", "[something you're doing]"],
       updatedLabel: "updated",
       updated: "[month year]",
     },
     footer: { note: "[footer note]" },
-    ui: {
-      hints: [
-        { key: "1-4", label: "section" },
-        { key: "j/k", label: "move" },
-        { key: "enter", label: "open" },
-        { key: "l", label: "language" },
-      ],
-      columns: ["Name", "Description", "Type"],
-    },
   },
   pt: {
     hero: {
-      status: "online",
       name: "Mateus Anselmo",
       role: "[papel]",
-      tagline: "[frase de efeito]",
+      tagline: "[uma frase sobre o que você faz e curte]",
     },
+    links: LINKS,
     about: {
       label: "sobre",
-      body: ["[parágrafo sobre você]", "[parágrafo sobre você]"],
+      body: [
+        "[Um parágrafo de abertura sobre você. Diga quem você é e do que curte, do seu jeito.]",
+        "[Um segundo parágrafo, mais tranquilo, com os detalhes extras.]",
+      ],
     },
     projects: {
       label: "projetos",
+      allLabel: "todos os repositórios",
       items: [
         {
-          name: "this site",
-          meta: "[meta]",
-          repo: "https://github.com/matoanselmo/website",
-          desc: "[descrição do projeto]",
-          tags: ["tag", "tag", "tag"],
-        },
-        {
-          name: "matoserver",
-          meta: "[meta]",
-          repo: "https://server.matoanselmo.runs-on.dev/",
-          desc: "[descrição do projeto]",
-          tags: ["tag", "tag", "tag"],
-        },
-        {
           name: "tessera",
-          meta: "[meta]",
           repo: "https://github.com/matoanselmo/tessera",
-          desc: "[descrição do projeto]",
-          tags: ["tag", "tag", "tag"],
+          desc: "[descrição do projeto, uma ou duas linhas]",
+          tags: ["qml", "niri", "[tag]"],
+        },
+        {
+          name: "este site",
+          repo: "https://github.com/matoanselmo/website",
+          desc: "[descrição do projeto, uma ou duas linhas]",
+          tags: ["astro", "[tag]"],
+        },
+        {
+          name: "[nome do projeto]",
+          repo: "https://github.com/matoanselmo",
+          desc: "[descrição do projeto, uma ou duas linhas]",
+          tags: ["[tag]", "[tag]"],
         },
       ],
     },
     experience: {
       label: "formação & trabalho",
       items: [
-        { period: "2025 - agora", role: "[papel]", org: "[lugar]", desc: "[o que você fez lá]" },
+        { period: "2025 — agora", role: "[papel]", org: "[lugar]", desc: "[o que você fez lá]" },
+        { period: "[ano — ano]", role: "[papel]", org: "[lugar]", desc: "[o que você fez lá]" },
       ],
     },
     now: {
       label: "agora",
-      intro: "[frase de abertura]",
       items: ["[algo que você tá fazendo]", "[algo que você tá fazendo]", "[algo que você tá fazendo]"],
       updatedLabel: "atualizado",
       updated: "[mês ano]",
     },
     footer: { note: "[nota do rodapé]" },
-    ui: {
-      hints: [
-        { key: "1-4", label: "seção" },
-        { key: "j/k", label: "mover" },
-        { key: "enter", label: "abrir" },
-        { key: "l", label: "idioma" },
-      ],
-      columns: ["Nome", "Descrição", "Tipo"],
-    },
   },
 };
