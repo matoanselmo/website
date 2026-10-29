@@ -72,7 +72,7 @@ export const CONTENT: Record<Lang, SiteContent> = {
       label: "about",
       body: [
         "I'm a tech enthusiast doing an exchange program in Vancouver. I love tinkering with 3d printers, code stuff (I vibecode sometimes :c).",
-        "\"A handsome young smart tech guy! - My girlfriend\"",
+        "\"A handsome young smart tech guy!\" - My girlfriend",
       ],
     },
     projects: {
@@ -125,7 +125,7 @@ export const CONTENT: Record<Lang, SiteContent> = {
       label: "sobre",
       body: [
         "Sou um entusiasta de tecnologia fazendo intercâmbio em Vancouver. Adoro mexer com impressoras 3D e com código (às vezes faço vibecoding :c).",
-        "\"Um garoto bonito, jovem e inteligente que manja de tecnologia! - Minha namorada\"",
+        "\"Um garoto bonito, jovem e inteligente que manja de tecnologia!\" - Minha namorada",
       ],
     },
     projects: {
