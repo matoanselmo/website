@@ -1,7 +1,0 @@
-services:
-  website-astro:
-    build: .
-    container_name: website-astro
-    restart: unless-stopped
-    ports:
-      - "9070:80"
