@@ -139,7 +139,7 @@ export const CONTENT: Record<Lang, SiteContent> = {
       label: "clubs",
       items: [
         { period: "2026", role: "Lead", org: "Technology Club", desc: "Restructured the club around open-ended projects, moving it off the VEX ecosystem and getting the school to fund ESP32s and better prototyping gear." },
-        { period: "2025", role: "Lead Developer & Builder", org: "VEX V5 Club", desc: "Designed and built a competition robot with a team of 8." },
+        { period: "2025", role: "Lead Developer & Builder", org: "VEX V5 Pushback Club", desc: "Designed and built a competition robot with a team of 8." },
       ],
     },
     now: {
@@ -215,7 +215,7 @@ export const CONTENT: Record<Lang, SiteContent> = {
       label: "clubes",
       items: [
         { period: "2026", role: "Líder", org: "Clube de Tecnologia", desc: "Reestruturei o clube em torno de projetos abertos, saindo do ecossistema VEX e conseguindo que a escola financiasse ESP32s e equipamentos melhores de prototipagem." },
-        { period: "2025", role: "Desenvolvedor Líder & Construtor", org: "Clube VEX V5", desc: "Projetei e construí um robô de competição com uma equipe de 8." },
+        { period: "2025", role: "Desenvolvedor Líder & Construtor", org: "Clube VEX V5 Pushback", desc: "Projetei e construí um robô de competição com uma equipe de 8." },
       ],
     },
     now: {
