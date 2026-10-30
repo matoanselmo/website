@@ -207,15 +207,15 @@ export const CONTENT: Record<Lang, SiteContent> = {
     competitions: {
       label: "competições",
       items: [
-        { period: "2026", role: "1º Lugar", org: "Feira de Ciências da Alexander Academy", desc: "Construí um Flite Test FT-22 adaptado como avião de telemetria ambiental para condições extremas, como incêndios florestais, florestas densas e ventos fortes. Equipe de 2." },
-        { period: "2025", role: "1º Lugar", org: "Hackathon da Alexander Academy", desc: "Projetei e construí um dashboard para toda a escola, para alunos e professores. Equipe de 5." },
+        { period: "2026", role: "1º Lugar", org: "Feira de Ciências da Alexander Academy", desc: "Construimos um Flite Test FT-22 adaptado como avião de telemetria ambiental para condições extremas, como incêndios florestais, florestas densas e ventos fortes. Equipe de 2." },
+        { period: "2025", role: "1º Lugar", org: "Hackathon da Alexander Academy", desc: "Projetamos e construimos um dashboard para toda a escola, para alunos e professores. Equipe de 5." },
       ],
     },
     clubs: {
       label: "clubes",
       items: [
         { period: "2026", role: "Líder", org: "Clube de Tecnologia", desc: "Reestruturei o clube em torno de projetos abertos, saindo do ecossistema VEX e conseguindo que a escola financiasse ESP32s e equipamentos melhores de prototipagem." },
-        { period: "2025", role: "Desenvolvedor Líder & Construtor", org: "Clube VEX V5 Pushback", desc: "Projetei e construí um robô de competição com uma equipe de 8." },
+        { period: "2025", role: "Desenvolvedor Líder & Construtor", org: "Clube VEX V5 Pushback", desc: "Projetamos e construimos um robô de competição com uma equipe de 8." },
       ],
     },
     now: {
