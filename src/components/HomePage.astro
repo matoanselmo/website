@@ -11,11 +11,18 @@ interface Props {
 const { lang } = Astro.props;
 const t = CONTENT[lang];
 
+// Education, competitions and clubs share one section, each as its own group.
+const timelines = [
+  SECTIONS.experience && t.experience,
+  SECTIONS.competitions && t.competitions,
+  SECTIONS.clubs && t.clubs,
+].filter((g) => g !== false);
+
 // Sections in the right column, numbered in the order they appear.
 const sections = [
   SECTIONS.about && { id: "about", label: t.about.label },
   SECTIONS.projects && { id: "projects", label: t.projects.label },
-  SECTIONS.experience && { id: "work", label: t.experience.label },
+  timelines.length > 0 && { id: "work", label: t.background.label },
 ]
   .filter((s): s is { id: string; label: string } => Boolean(s))
   .map((s, i) => ({ ...s, num: String(i + 1).padStart(2, "0") }));
@@ -104,18 +111,23 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
         </>
       )}
 
-      {SECTIONS.experience && (
+      {timelines.length > 0 && (
         <>
           <hr class="divider" aria-hidden="true" />
           <section class="section" id="work">
-            <h2 class="section__label"><span class="section__num">{num("work")}</span>{t.experience.label}</h2>
-            {t.experience.items.map((x) => (
-              <div class="job">
-                <span class="job__period">{x.period}</span>
-                <div class="job__body">
-                  <span class="job__role">{x.role} <span class="text-faint">@</span> <span class="job__org">{x.org}</span></span>
-                  <span class="job__desc">{x.desc}</span>
-                </div>
+            <h2 class="section__label"><span class="section__num">{num("work")}</span>{t.background.label}</h2>
+            {timelines.map((group) => (
+              <div class="group">
+                <h3 class="group__label">{group.label}</h3>
+                {group.items.map((x) => (
+                  <div class="job">
+                    <span class="job__period">{x.period}</span>
+                    <div class="job__body">
+                      <span class="job__role">{x.role} <span class="text-faint">@</span> <span class="job__org">{x.org}</span></span>
+                      <span class="job__desc">{x.desc}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             ))}
           </section>
@@ -162,12 +174,13 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
 
 <style>
   .layout {
-    max-width: 1240px;
+    --gutter: clamp(20px, 5vw, 48px);
+    max-width: 880px;
     margin: 0 auto;
-    padding: 0 32px;
+    padding: 0 var(--gutter);
     display: flex;
-    flex-wrap: wrap;
-    gap: 48px;
+    flex-direction: column;
+    gap: clamp(32px, 6vw, 48px);
   }
 
   .text-faint {
@@ -176,34 +189,41 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
 
   /* Left column */
   .intro {
-    flex: 0 1 300px;
-    max-width: 320px;
-    padding: 96px 0 48px;
+    --stack: clamp(28px, 2.5vw, 40px);
+    padding: clamp(24px, 6vw, 64px) 0 0;
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: var(--stack);
   }
 
   @media (min-width: 960px) {
     /* The panel runs from the window's left edge; the content keeps a readable width. */
     .layout {
       max-width: none;
-      padding-left: 0;
+      padding: 0;
+      display: grid;
+      /* 30% panel, 70% content; the panel never gets narrower than its contents need. */
+      grid-template-columns: minmax(300px, 30fr) minmax(0, 70fr);
+      gap: 0;
+      /* One edge spacing on both sides of the panel border. */
+      --edge: clamp(32px, 3vw, 48px);
     }
 
+    /* The content fills its 75%; long text is still capped by .body-text. */
     .content {
-      max-width: 880px;
+      max-width: none;
+      padding-inline: var(--edge);
     }
 
     .intro {
       position: sticky;
       top: 0;
-      align-self: flex-start;
-      flex: 0 0 352px;
-      max-width: 352px;
+      align-self: start;
       height: 100vh;
-      padding: 48px 32px;
-      justify-content: center;
+      height: 100dvh;
+      padding: 48px var(--edge);
+      /* safe: on short windows the panel scrolls instead of clipping its top */
+      justify-content: safe center;
       overflow-y: auto;
       border-right: 1px solid var(--surface-raised);
       background-color: var(--surface-dim);
@@ -216,11 +236,16 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
   .hero {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
+  }
+
+  /* A little more air under the name than between the lines below it. */
+  .hero__name {
+    margin-bottom: 8px;
   }
 
   .hero__name {
-    font-size: 52px;
+    font-size: clamp(40px, 2.4vw + 26px, 60px);
     line-height: 1.02;
     letter-spacing: -0.03em;
   }
@@ -235,19 +260,21 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
   }
 
   .hero__role {
-    font-size: 17px;
+    font-size: clamp(15px, 0.3vw + 13px, 18px);
     font-weight: var(--weight-medium);
     color: var(--accent-violet);
   }
 
   .hero__tagline {
     max-width: 34ch;
-    font-size: 15px;
+    font-size: clamp(14px, 0.2vw + 13px, 16px);
     color: var(--text-2);
   }
 
   /* Section nav */
   .toc {
+    /* Cancel the links' own padding so the gaps above and below match the rest of the panel. */
+    margin-block: -6px;
     display: flex;
     flex-direction: column;
     font-size: var(--text-sm);
@@ -295,7 +322,7 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
   /* Now pane, after Tessera's TuiPane */
   .pane {
     min-width: 0;
-    padding: 10px 16px 16px;
+    padding: 8px 16px 16px;
     border: 1px solid var(--accent-blue);
     background: var(--surface);
   }
@@ -325,7 +352,7 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
   }
 
   .now__updated {
-    margin-top: 12px;
+    margin-top: 16px;
     font-size: var(--text-xs);
     letter-spacing: var(--tracking-caps);
     text-transform: uppercase;
@@ -361,12 +388,11 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
 
   /* Right column */
   .content {
-    flex: 999 1 600px;
     min-width: 0;
-    padding: 96px 0 64px;
+    padding-bottom: clamp(40px, 8vw, 64px);
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: clamp(32px, 4vw, 48px);
   }
 
   .section {
@@ -399,7 +425,7 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
 
   .body-text {
     max-width: 72ch;
-    font-size: 17px;
+    font-size: clamp(15px, 0.3vw + 13.5px, 17px);
     line-height: 1.7;
     color: var(--text);
   }
@@ -413,14 +439,14 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    margin: 0 -20px;
+    margin: 0 calc(-1 * min(20px, var(--gutter, 20px)));
   }
 
   .proj {
     display: grid;
-    grid-template-columns: 44px minmax(0, 1fr) auto;
-    gap: 20px;
-    padding: 20px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: clamp(12px, 2vw, 20px);
+    padding: clamp(14px, 2vw, 20px) min(20px, var(--gutter, 20px));
     color: var(--text);
     transition: background var(--transition), opacity var(--transition);
   }
@@ -492,10 +518,28 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
     font-weight: var(--weight-bold);
   }
 
-  /* Education & work */
+  /* Experience: education, competitions, clubs */
+  .group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .group + .group {
+    margin-top: 16px;
+  }
+
+  .group__label {
+    font-size: var(--text-xs);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
   .job {
     display: grid;
-    grid-template-columns: 140px minmax(0, 1fr);
+    grid-template-columns: clamp(110px, 14vw, 140px) minmax(0, 1fr);
     gap: 4px 24px;
   }
 
@@ -533,16 +577,6 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
   }
 
   @media (max-width: 959px) {
-    .intro {
-      flex-basis: 100%;
-      max-width: none;
-      padding: 24px 0 0;
-    }
-
-    .content {
-      padding-top: 0;
-    }
-
     /* Links and the language switch move to the top on narrow screens. */
     .links {
       order: -1;
@@ -550,14 +584,6 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
   }
 
   @media (max-width: 560px) {
-    .layout {
-      padding: 0 20px;
-    }
-
-    .hero__name {
-      font-size: 40px;
-    }
-
     .job {
       grid-template-columns: 1fr;
     }
