@@ -115,6 +115,9 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
                 <span class="links__spacer" />
                 <LanguageSwitcher current={lang} />
             </div>
+
+            <!-- Last child, so align() still measures the hero first -->
+            <canvas class="intro__trail" aria-hidden="true" />
         </aside>
 
         <!-- Right column: the part that scrolls -->
@@ -267,6 +270,101 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
         spy();
     });
     window.addEventListener("scroll", spy, { passive: true });
+
+    // Cells of the panel's dot grid light up under the cursor and fade out.
+    const trail = document.querySelector<HTMLCanvasElement>(".intro__trail");
+    const ctx = trail?.getContext("2d");
+    const canTrail = window.matchMedia(
+        "(min-width: 960px) and (hover: hover) and (prefers-reduced-motion: no-preference)",
+    );
+    if (intro && trail && ctx) {
+        // Matches the dots: 18px tiles, shifted -1px, dot in the tile's center.
+        const CELL = 18;
+        const OFFSET = CELL / 2 - 1;
+        const FADE_MS = 700;
+        // Each cell takes a random One Dark accent (none of them is the panel's background).
+        const ACCENTS = ["blue", "violet", "cyan", "amber", "green", "red"];
+        const POP_MS = 180;
+        const FADE_SPREAD_MS = 400;
+        const cells = new Map<string, { life: number; born: number; fade: number; color: string }>();
+        let last: { cx: number; cy: number } | null = null;
+        let frame = 0;
+        let prev = 0;
+        let colors: string[] = [];
+
+        const resize = () => {
+            const dpr = window.devicePixelRatio || 1;
+            trail.width = Math.round(trail.clientWidth * dpr);
+            trail.height = Math.round(trail.clientHeight * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            const style = getComputedStyle(trail);
+            colors = ACCENTS.map((name) => style.getPropertyValue(`--accent-${name}`).trim());
+        };
+
+        const draw = (now: number) => {
+            const dt = prev ? now - prev : 16;
+            prev = now;
+            ctx.clearRect(0, 0, trail.clientWidth, trail.clientHeight);
+            for (const [key, cell] of cells) {
+                const next = cell.life - dt / cell.fade;
+                if (next <= 0) {
+                    cells.delete(key);
+                    continue;
+                }
+                cell.life = next;
+                const [cx, cy] = key.split(",").map(Number);
+                ctx.fillStyle = cell.color;
+                ctx.globalAlpha = 0.5;
+                // Pops in with a slight overshoot, holds, then pops out the same way in reverse.
+                const t = Math.min((now - cell.born) / POP_MS, 1, (next * cell.fade) / POP_MS);
+                const pop = 1 + 2.7 * (t - 1) ** 3 + 1.7 * (t - 1) ** 2;
+                const size = (CELL - 4) * pop;
+                const x = OFFSET + cx * CELL + CELL / 2;
+                const y = OFFSET + cy * CELL + CELL / 2;
+                ctx.fillRect(x - size / 2, y - size / 2, size, size);
+            }
+            ctx.globalAlpha = 1;
+            frame = cells.size ? requestAnimationFrame(draw) : 0;
+            if (!frame) prev = 0;
+        };
+
+        const light = (cx: number, cy: number) => {
+            const key = `${cx},${cy}`;
+            const cell = cells.get(key);
+            // A cell that's still lit keeps its color, so it doesn't flicker under the cursor.
+            if (cell) cell.life = 1;
+            else
+                cells.set(key, {
+                    life: 1,
+                    born: performance.now(),
+                    // Random lifetime, so neighbouring cells pop out at different moments.
+                    fade: FADE_MS + (Math.random() - 0.5) * FADE_SPREAD_MS,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                });
+            if (!frame) frame = requestAnimationFrame(draw);
+        };
+
+        intro.addEventListener("pointermove", (e) => {
+            if (!canTrail.matches || e.pointerType !== "mouse") return;
+            const r = trail.getBoundingClientRect();
+            const cx = Math.floor((e.clientX - r.left - OFFSET) / CELL);
+            const cy = Math.floor((e.clientY - r.top - OFFSET) / CELL);
+            // Fill the cells between this event and the last, so fast moves stay continuous.
+            const from = last ?? { cx, cy };
+            const steps = Math.max(Math.abs(cx - from.cx), Math.abs(cy - from.cy), 1);
+            for (let i = 1; i <= steps; i++) {
+                light(
+                    Math.round(from.cx + ((cx - from.cx) * i) / steps),
+                    Math.round(from.cy + ((cy - from.cy) * i) / steps),
+                );
+            }
+            last = { cx, cy };
+        });
+        intro.addEventListener("pointerleave", () => (last = null));
+
+        new ResizeObserver(resize).observe(trail);
+        resize();
+    }
 </script>
 
 <style>
@@ -285,6 +383,10 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
     }
 
     /* Left column */
+    .intro__trail {
+        display: none;
+    }
+
     .intro {
         --stack: clamp(28px, 2.5vw, 40px);
         padding: clamp(24px, 6vw, 64px) 0 0;
@@ -330,6 +432,18 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
             );
             background-size: 18px 18px;
             background-position: -1px -1px;
+            /* Keeps the trail canvas above this background but under the text. */
+            isolation: isolate;
+        }
+
+        .intro__trail {
+            display: block;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
         }
     }
 
@@ -538,7 +652,7 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
         color: var(--text-2);
     }
 
-    /* Projects: hovering one fades the rest */
+    /* Projects */
     .projects {
         display: flex;
         flex-direction: column;
@@ -560,10 +674,6 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
     .proj:hover {
         opacity: 1;
         background: var(--surface);
-    }
-
-    .projects:hover .proj:not(:hover) {
-        opacity: 0.5;
     }
 
     .proj__num {
@@ -688,6 +798,11 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
         /* Links and the language switch move to the top on narrow screens. */
         .links {
             order: -1;
+        }
+
+        /* The section nav only works in the two-column layout. */
+        .toc {
+            display: none;
         }
     }
 
