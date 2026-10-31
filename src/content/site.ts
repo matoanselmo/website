@@ -59,14 +59,16 @@ export interface SiteContent {
 
 export type Lang = "en" | "pt";
 
-export const SECTIONS = {
+const SECTION_FLAGS = {
   about: true,
   projects: true,
   experience: true,
   competitions: true,
   clubs: true,
   now: true,
-} as const;
+};
+
+export const SECTIONS: Record<keyof typeof SECTION_FLAGS, boolean> = SECTION_FLAGS;
 
 const LINKS = {
   github: "https://github.com/matoanselmo",
