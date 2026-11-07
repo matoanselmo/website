@@ -1,0 +1,172 @@
+---
+import { BOOT_LINES } from "@/content/site";
+
+interface Props {
+    // Section labels in the page's language, shown on the "ready" line.
+    sections: string[];
+}
+
+const { sections } = Astro.props;
+const lines = BOOT_LINES.map((l) => ("ready" in l ? { ready: l.ready + sections.join(", ") } : l));
+---
+
+<!--
+    Decides before the content paints, so it never flashes in and out.
+    Without JavaScript this never runs and the content shows as usual.
+-->
+<script is:inline>
+    (() => {
+        try {
+            if (location.hash) return;
+            if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+            if (sessionStorage.getItem("booted")) return;
+            sessionStorage.setItem("booted", "1");
+            const root = document.documentElement;
+            root.dataset.boot = "on";
+            // Safety net: the content comes back even if the animation script never loads.
+            setTimeout(() => delete root.dataset.boot, 2500);
+        } catch {
+            // No storage: skip the animation rather than play it on every load.
+        }
+    })();
+</script>
+
+<div class="boot" aria-hidden="true" data-lines={JSON.stringify(lines)}></div>
+
+<script>
+    // Line timings in ms: [start, end of typing or counting]. The whole run stays under 1500ms.
+    const TIMES = [
+        [0, 220],
+        [240, 240],
+        [290, 290],
+        [340, 560],
+        [580, 580],
+        [620, 760],
+        [790, 790],
+        [830, 910],
+        [950, 950],
+    ];
+    const FADE_AT = 1250;
+    const DONE_AT = 1500;
+
+    type Line = { cmd?: string; out?: string; percent?: boolean; ready?: string };
+
+    const root = document.documentElement;
+    const boot = document.querySelector<HTMLElement>(".boot");
+
+    if (boot && root.dataset.boot === "on") {
+        const lines: Line[] = JSON.parse(boot.dataset.lines ?? "[]");
+
+        // One row per line, filled in as time passes.
+        const rows = lines.map((line) => {
+            const row = document.createElement("div");
+            row.className = "boot__line";
+            row.hidden = true;
+            if (line.cmd !== undefined) {
+                const sign = document.createElement("span");
+                sign.className = "boot__sign";
+                sign.textContent = "$ ";
+                row.append(sign);
+            }
+            if (line.ready !== undefined) row.classList.add("boot__line--ready");
+            const text = document.createElement("span");
+            row.append(text);
+            boot.append(row);
+            return text;
+        });
+
+        let frame = 0;
+        let start = 0;
+
+        const finish = () => {
+            cancelAnimationFrame(frame);
+            removeEventListener("pointerdown", skip);
+            removeEventListener("keydown", skip);
+            removeEventListener("wheel", skip);
+            removeEventListener("touchmove", skip);
+            removeEventListener("scroll", skip);
+            root.dataset.boot = "out";
+            setTimeout(() => {
+                delete root.dataset.boot;
+                boot.remove();
+            }, DONE_AT - FADE_AT);
+        };
+
+        const skip = () => finish();
+
+        const tick = (now: number) => {
+            start ||= now;
+            const t = now - start;
+            lines.forEach((line, i) => {
+                const [from, to] = TIMES[i];
+                if (t < from) return;
+                const row = rows[i];
+                row.parentElement!.hidden = false;
+                const progress = to > from ? Math.min((t - from) / (to - from), 1) : 1;
+                if (line.cmd !== undefined)
+                    row.textContent = line.cmd.slice(0, Math.ceil(line.cmd.length * progress));
+                else if (line.percent) row.textContent = `${line.out}${Math.round(progress * 100)}%`;
+                else row.textContent = line.out ?? line.ready ?? "";
+            });
+            if (t >= FADE_AT) finish();
+            else frame = requestAnimationFrame(tick);
+        };
+
+        addEventListener("pointerdown", skip);
+        addEventListener("keydown", skip);
+        addEventListener("wheel", skip, { passive: true });
+        addEventListener("touchmove", skip, { passive: true });
+        addEventListener("scroll", skip, { passive: true });
+        frame = requestAnimationFrame(tick);
+    }
+</script>
+
+<style>
+    .boot {
+        display: none;
+    }
+
+    /* The overlay sits on top of the content column, so nothing moves when it goes. */
+    :global(html[data-boot]) :global(.content) {
+        position: relative;
+    }
+
+    :global(html[data-boot]) :global(.content > :not(.boot)) {
+        transition: opacity 250ms ease;
+    }
+
+    :global(html[data-boot="on"]) :global(.content > :not(.boot)) {
+        opacity: 0;
+    }
+
+    :global(html[data-boot]) .boot {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        position: absolute;
+        inset: 0 0 auto;
+        padding: inherit;
+        font-size: var(--text-base);
+        line-height: var(--leading-code);
+        color: var(--text-2);
+        pointer-events: none;
+        transition: opacity 250ms ease;
+    }
+
+    :global(html[data-boot="out"]) .boot {
+        opacity: 0;
+    }
+
+    .boot :global(.boot__line) {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+
+    .boot :global(.boot__sign) {
+        color: var(--accent-blue);
+    }
+
+    .boot :global(.boot__line--ready) {
+        color: var(--accent-green);
+    }
+</style>

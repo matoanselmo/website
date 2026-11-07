@@ -1,0 +1,323 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import type { Lang } from "@/content/site";
+import { CONTENT, TERMINAL_COMMANDS } from "@/content/site";
+
+interface Props {
+    lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = CONTENT[lang];
+
+// Everything the commands print comes from the page's own content.
+const data = {
+    lang,
+    name: t.hero.name,
+    role: t.hero.role,
+    projects: t.projects.items.map((p) => ({ name: p.name, repo: p.repo })),
+    email: t.links.email.replace(/^mailto:/, ""),
+    commands: TERMINAL_COMMANDS.map((c) => [c, t.terminal.help[c]]),
+    text: t.terminal,
+    urls: { en: getRelativeLocaleUrl("en"), pt: getRelativeLocaleUrl("pt") },
+};
+---
+
+<dialog class="term" aria-label={t.terminal.label} data-term={JSON.stringify(data)}>
+    <fieldset class="term__pane">
+        <legend class="term__title">terminal</legend>
+        <div class="term__out" aria-live="polite"></div>
+        <form class="term__line" method="dialog">
+            <label class="term__prompt" for="term-input">visitor@matoanselmo:~$</label>
+            <input
+                class="term__input"
+                id="term-input"
+                type="text"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+            />
+        </form>
+    </fieldset>
+</dialog>
+
+<script>
+    type Data = {
+        lang: "en" | "pt";
+        name: string;
+        role: string;
+        projects: { name: string; repo: string }[];
+        email: string;
+        commands: [string, string][];
+        text: {
+            notFound: string;
+            usage: string;
+            noProject: string;
+            opening: string;
+            sameLang: string;
+            sudo: string;
+            neofetch: Record<"location" | "languages" | "interests", string> & {
+                labels: Record<"location" | "languages" | "interests", string>;
+            };
+        };
+        urls: Record<"en" | "pt", string>;
+    };
+
+    const dialog = document.querySelector<HTMLDialogElement>(".term");
+    const out = dialog?.querySelector<HTMLElement>(".term__out");
+    const form = dialog?.querySelector<HTMLFormElement>(".term__line");
+    const input = dialog?.querySelector<HTMLInputElement>(".term__input");
+
+    if (dialog && out && form && input) {
+        const d: Data = JSON.parse(dialog.dataset.term ?? "{}");
+        const history: string[] = [];
+        let cursor = 0;
+        let opener: Element | null = null;
+
+        // Output is always plain text, never HTML.
+        const print = (text: string, tone?: "blue" | "green" | "red") => {
+            const line = document.createElement("div");
+            line.className = tone ? `term__text term__text--${tone}` : "term__text";
+            line.textContent = text;
+            out.append(line);
+            out.scrollTop = out.scrollHeight;
+        };
+
+        // Matches a project by its full name or the part before " - ".
+        const findProject = (query: string) =>
+            d.projects.find((p) => {
+                const name = p.name.toLowerCase();
+                return name === query || name.split(" - ")[0] === query;
+            });
+
+        const projectKey = (name: string) => name.split(" - ")[0];
+
+        const neofetch = () => {
+            const n = d.text.neofetch;
+            const rows = [
+                [d.name, ""],
+                ["-".repeat(d.name.length), ""],
+                [n.labels.location, n.location],
+                [n.labels.languages, n.languages],
+                [n.labels.interests, n.interests],
+            ];
+            // Plain ASCII, so every row is the same width in the page font.
+            const art = ["+-----+", "| >_  |", "|     |", "+-----+", ""];
+            rows.forEach(([label, value], i) =>
+                print(`${art[i].padEnd(7)}   ${value ? `${label}: ${value}` : label}`, i === 0 ? "blue" : undefined),
+            );
+        };
+
+        const run = (raw: string) => {
+            const cmd = raw.trim().replace(/\s+/g, " ");
+            const [head, ...rest] = cmd.split(" ");
+            const arg = rest.join(" ").toLowerCase();
+            switch (head.toLowerCase()) {
+                case "":
+                    return;
+                case "help":
+                    return d.commands.forEach(([c, desc]) => print(`${c.padEnd(16)}${desc}`));
+                case "whoami":
+                    return print(`${d.name} — ${d.role}`);
+                case "ls":
+                    if (arg === "projects") return d.projects.forEach((p) => print(projectKey(p.name)));
+                    return print(`${d.text.usage}: ls projects`);
+                case "open": {
+                    if (!arg) return print(`${d.text.usage}: open <project>`);
+                    const project = findProject(arg);
+                    if (!project) return print(`${d.text.noProject}: ${arg}`, "red");
+                    print(`${d.text.opening} ${project.repo}`, "green");
+                    window.open(project.repo, "_blank", "noopener");
+                    return;
+                }
+                case "neofetch":
+                    return neofetch();
+                case "lang":
+                    if (arg !== "en" && arg !== "pt") return print(`${d.text.usage}: lang en|pt`);
+                    if (arg === d.lang) return print(d.text.sameLang);
+                    location.href = d.urls[arg];
+                    return;
+                case "contact":
+                    return print(d.email, "green");
+                case "sudo":
+                    return print(d.text.sudo, "red");
+                case "clear":
+                    out.replaceChildren();
+                    return;
+                case "exit":
+                    dialog.close();
+                    return;
+                default:
+                    print(`${head}: ${d.text.notFound}`, "red");
+            }
+        };
+
+        const open = () => {
+            opener = document.activeElement;
+            dialog.showModal();
+            input.focus();
+        };
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const value = input.value;
+            const echo = document.createElement("div");
+            echo.className = "term__text";
+            const prompt = document.createElement("span");
+            prompt.className = "term__prompt";
+            prompt.textContent = "visitor@matoanselmo:~$ ";
+            echo.append(prompt, value);
+            out.append(echo);
+            if (value.trim()) history.push(value);
+            cursor = history.length;
+            input.value = "";
+            run(value);
+            out.scrollTop = out.scrollHeight;
+        });
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowUp" && cursor > 0) {
+                e.preventDefault();
+                input.value = history[--cursor];
+            } else if (e.key === "ArrowDown" && cursor < history.length) {
+                e.preventDefault();
+                cursor++;
+                input.value = history[cursor] ?? "";
+            } else if (e.key === "Tab") {
+                // Completes "open <project>" from the start of a project name.
+                const match = /^open\s+(\S*)$/i.exec(input.value);
+                if (!match) return;
+                e.preventDefault();
+                const found = d.projects.map((p) => projectKey(p.name)).filter((n) => n.toLowerCase().startsWith(match[1].toLowerCase()));
+                if (found.length === 1) input.value = `open ${found[0]}`;
+                else if (found.length > 1) print(found.join("  "));
+            } else if (e.key === "~") {
+                e.preventDefault();
+                dialog.close();
+            }
+        });
+
+        // Clicking the dimmed area around the panel closes it too.
+        dialog.addEventListener("click", (e) => {
+            if (e.target === dialog) dialog.close();
+        });
+
+        dialog.addEventListener("close", () => {
+            if (opener instanceof HTMLElement) opener.focus();
+            opener = null;
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key !== "~" || dialog.open) return;
+            const target = e.target as HTMLElement | null;
+            if (target?.closest("input, textarea, select, [contenteditable]:not([contenteditable='false'])")) return;
+            e.preventDefault();
+            open();
+        });
+
+        document.querySelectorAll<HTMLElement>("[data-term-hint]").forEach((hint) => {
+            hint.hidden = false;
+            hint.querySelector("button")?.addEventListener("click", open);
+        });
+    }
+</script>
+
+<style>
+    .term {
+        position: fixed;
+        inset: 0;
+        width: min(560px, calc(100vw - 32px));
+        height: fit-content;
+        max-height: min(420px, calc(100dvh - 32px));
+        margin: auto;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--text);
+        font-family: var(--font);
+    }
+
+    .term::backdrop {
+        background: color-mix(in srgb, var(--bg) 50%, transparent);
+    }
+
+    /* Same build as the Now pane: square, blue border, title in the border. */
+    .term__pane {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+        max-height: inherit;
+        padding: 8px 16px 16px;
+        border: 1px solid var(--accent-blue);
+        background: var(--surface);
+    }
+
+    .term__title {
+        padding: 0 6px;
+        margin-left: -6px;
+        font-weight: var(--weight-bold);
+        color: var(--accent-blue);
+    }
+
+    .term__out {
+        min-height: 0;
+        max-height: 280px;
+        overflow-y: auto;
+        font-size: 13px;
+        line-height: var(--leading-code);
+        color: var(--text-2);
+    }
+
+    .term__out:empty {
+        display: none;
+    }
+
+    .term__out :global(.term__text) {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+
+    .term__out :global(.term__text--blue) {
+        color: var(--accent-blue);
+    }
+
+    .term__out :global(.term__text--green) {
+        color: var(--accent-green);
+    }
+
+    .term__out :global(.term__text--red) {
+        color: var(--accent-red);
+    }
+
+    .term__line {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        font-size: 13px;
+    }
+
+    .term__prompt {
+        flex-shrink: 0;
+        color: var(--accent-blue);
+    }
+
+    .term__input {
+        flex: 1;
+        min-width: 0;
+        padding: 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--text);
+        font: inherit;
+        caret-color: var(--accent-blue);
+    }
+
+    @media (max-width: 480px) {
+        .term__out,
+        .term__line {
+            font-size: var(--text-sm);
+        }
+    }
+</style>

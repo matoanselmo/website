@@ -1,0 +1,88 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { CONTENT, NOT_FOUND, type Lang } from "@/content/site";
+import Layout from "@/layouts/Layout.astro";
+
+const langs: Lang[] = ["en", "pt"];
+---
+
+<Layout title={`404 | ${CONTENT.en.hero.name}`} description={CONTENT.en.meta.description}>
+    <main class="nf">
+        {langs.map((lang) => (
+            <fieldset class="nf__pane" data-lang={lang} hidden={lang !== "en"} lang={lang}>
+                <legend class="nf__title">404</legend>
+                <p class="nf__line">
+                    <span class="nf__sign">$</span> cd <span class="nf__path">this-page</span>
+                </p>
+                <p class="nf__error">
+                    bash: cd: <span class="nf__path">this-page</span>: {NOT_FOUND[lang].error}
+                </p>
+                <a class="nf__back" href={getRelativeLocaleUrl(lang)}>← {NOT_FOUND[lang].back}</a>
+            </fieldset>
+        ))}
+    </main>
+</Layout>
+
+<script>
+    // Show the Portuguese version under /pt/, and the path that was asked for.
+    // Without JavaScript the English version shows with a generic path.
+    const pt = location.pathname.startsWith("/pt");
+    if (pt) document.documentElement.lang = "pt";
+    document.querySelectorAll<HTMLElement>(".nf__pane").forEach((pane) => {
+        pane.hidden = pane.dataset.lang !== (pt ? "pt" : "en");
+    });
+    let path = location.pathname;
+    try {
+        path = decodeURIComponent(path);
+    } catch {
+        // A malformed URL stays encoded.
+    }
+    document.querySelectorAll(".nf__path").forEach((el) => (el.textContent = path));
+</script>
+
+<style>
+    .nf {
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: 16px;
+    }
+
+    /* Same build as the Now pane. */
+    .nf__pane {
+        width: min(560px, 100%);
+        min-width: 0;
+        padding: 8px 16px 16px;
+        border: 1px solid var(--accent-blue);
+        background: var(--surface);
+        font-size: var(--text-base);
+        line-height: var(--leading-code);
+    }
+
+    .nf__title {
+        padding: 0 6px;
+        margin-left: -6px;
+        font-weight: var(--weight-bold);
+        color: var(--accent-blue);
+    }
+
+    .nf__line,
+    .nf__error {
+        overflow-wrap: anywhere;
+    }
+
+    .nf__sign {
+        color: var(--accent-blue);
+    }
+
+    .nf__error {
+        color: var(--accent-red);
+    }
+
+    .nf__back {
+        display: inline-block;
+        margin-top: 16px;
+        color: var(--accent-blue);
+    }
+</style>
