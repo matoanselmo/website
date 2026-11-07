@@ -3,6 +3,8 @@ import type { Lang } from "@/content/site";
 import { CONTENT, SECTIONS } from "@/content/site";
 import Layout from "@/layouts/Layout.astro";
 import LanguageSwitcher from "@/components/LanguageSwitcher.astro";
+import BootSequence from "@/components/BootSequence.astro";
+import Terminal from "@/components/Terminal.astro";
 
 interface Props {
     lang: Lang;
@@ -30,7 +32,7 @@ const sections = [
 const num = (id: string) => sections.find((s) => s.id === id)?.num;
 ---
 
-<Layout title={`matoanselmo`} lang={lang}>
+<Layout title={t.meta.title} description={t.meta.description} lang={lang}>
     <div class="layout">
         <!-- Left column: pinned beside the content on wide screens -->
         <aside class="intro" id="home">
@@ -48,7 +50,7 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
                 <p class="hero__tagline">{t.hero.tagline}</p>
             </div>
 
-            <nav class="toc" aria-label="On this page">
+            <nav class="toc" aria-label={t.a11y.toc}>
                 {sections.map((s, i) => (
                     <a
                         class:list={["toc__link", { "is-active": i === 0 }]}
@@ -116,12 +118,12 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
                 <LanguageSwitcher current={lang} />
             </div>
 
-            <!-- Last child, so align() still measures the hero first -->
             <canvas class="intro__trail" aria-hidden="true" />
         </aside>
 
         <!-- Right column: the part that scrolls -->
         <main class="content" id="content">
+            <BootSequence sections={sections.map((s) => s.label)} />
             {SECTIONS.about && (
                 <section class="section" id="about">
                     <h2 class="section__label">
@@ -165,7 +167,7 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
                                         <span class="proj__desc">{p.desc}</span>
                                         <span class="proj__tags">
                                             {p.tags.map((tag) => (
-                                                <span class="tag">{tag}</span>
+                                                <span class="tag" title={tag === "ai" ? t.projects.aiNote : undefined}>{tag}</span>
                                             ))}
                                         </span>
                                     </span>
@@ -228,26 +230,23 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
                 </>
             )}
 
-            <footer class="footer">{t.footer.note}</footer>
+            <footer class="footer">
+                {t.footer.note}
+                <span class="footer__hint" data-term-hint hidden>
+                    · <button class="footer__term" type="button">
+                        <span class="footer__key">{t.terminal.hint}</span>
+                        <span class="footer__touch">{t.terminal.hintTouch}</span>
+                    </button>
+                </span>
+            </footer>
         </main>
     </div>
+    <Terminal lang={lang} />
 </Layout>
 
 <script>
     const intro = document.getElementById("home");
-    const content = document.getElementById("content");
     const links = [...document.querySelectorAll<HTMLElement>("[data-toc]")];
-    const wide = window.matchMedia("(min-width: 960px)");
-
-    // Start the right column level with the name in the centered left column,
-    // so both sides share one top line on the first screen.
-    const align = () => {
-        const first = intro?.firstElementChild;
-        if (!intro || !first || !content) return;
-        content.style.paddingTop = wide.matches
-            ? `${Math.max(48, Math.round(first.getBoundingClientRect().top - intro.getBoundingClientRect().top))}px`
-            : "";
-    };
 
     // The active section is the last one whose top has crossed 40% of the window.
     const spy = () => {
@@ -263,12 +262,8 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
         );
     };
 
-    align();
     spy();
-    window.addEventListener("resize", () => {
-        align();
-        spy();
-    });
+    window.addEventListener("resize", spy);
     window.addEventListener("scroll", spy, { passive: true });
 
     // Cells of the panel's dot grid light up under the cursor and fade out.
@@ -411,6 +406,8 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
         /* The content fills its 75%; long text is still capped by .body-text. */
         .content {
             max-width: none;
+            /* Same space above and below the content as beside it. */
+            padding-block: var(--edge);
             padding-inline: var(--edge);
         }
 
@@ -607,7 +604,6 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
     /* Right column */
     .content {
         min-width: 0;
-        padding-bottom: clamp(40px, 8vw, 64px);
         display: flex;
         flex-direction: column;
         gap: clamp(32px, 4vw, 48px);
@@ -624,7 +620,7 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: var(--text-sm);
+        font-size: var(--text-base);
         letter-spacing: var(--tracking-caps);
         text-transform: uppercase;
         color: var(--text-2);
@@ -748,7 +744,7 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
     }
 
     .group__label {
-        font-size: var(--text-xs);
+        font-size: var(--text-sm);
         font-weight: var(--weight-bold);
         letter-spacing: var(--tracking-caps);
         text-transform: uppercase;
@@ -790,11 +786,52 @@ const num = (id: string) => sections.find((s) => s.id === id)?.num;
     .footer {
         padding-top: 24px;
         border-top: 1px dashed var(--surface-raised);
-        font-size: var(--text-sm);
+        font-size: var(--text-base);
         color: var(--text-3);
     }
 
+    /* Shown once the terminal script is running; also opens it on touch screens. */
+    .footer__hint {
+        margin-left: 1ch;
+    }
+
+    .footer__term {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: inherit;
+        font: inherit;
+        text-decoration: underline dotted;
+        text-underline-offset: 3px;
+        cursor: pointer;
+        transition: color var(--transition);
+    }
+
+    .footer__term:hover,
+    .footer__term:focus-visible {
+        color: var(--accent-blue);
+    }
+
+    /* "press ~" with a real keyboard, "open terminal" on touch screens. */
+    .footer__touch {
+        display: none;
+    }
+
+    @media not ((hover: hover) and (pointer: fine)) {
+        .footer__key {
+            display: none;
+        }
+
+        .footer__touch {
+            display: inline;
+        }
+    }
+
     @media (max-width: 959px) {
+        .content {
+            padding-bottom: clamp(40px, 8vw, 64px);
+        }
+
         /* Links and the language switch move to the top on narrow screens. */
         .links {
             order: -1;

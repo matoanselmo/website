@@ -1,6 +1,6 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
-import type { Lang } from "@/content/site";
+import { CONTENT, type Lang } from "@/content/site";
 
 interface Props {
   current: Lang;
@@ -14,7 +14,7 @@ const languages: { code: Lang; label: string }[] = [
 ];
 ---
 
-<nav class="lang-switcher" aria-label="Language">
+<nav class="lang-switcher" aria-label={CONTENT[current].a11y.language}>
   {languages.map((l) => (
     <a
       href={getRelativeLocaleUrl(l.code)}
